@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html><head>
+  <meta charset="utf-8">
+  <title>Vector Example</title>
+  <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.bundle.min.js"></script>
+
+  <script src="index.js"></script>
+</head><body>
+  <h1></h1>
+  <h2>Data</h2>
+  <textarea id="data" rows="8" cols="40" placeholder="X Y">
+    1  12
+    7 14
+    12	5
+
+    21	 7
+
+  </textarea>
+
+  <input id="func" value="c[0] + c[1] * x" />
+  <input id="coeffs" value="5 0.5" />
+  <input id="s" value="Infinity" />
+
+  <button onclick="plot()">Plot</button>
+
+  <input id="iterations" value="100" />
+  <button onclick="curveFit()">Curve Fit</button>
+
+  <canvas id="myChart" width="400" height="200"></canvas>
+  <script>
+    const curveFit = () => {
+      const data = document.getElementById('data').value;
+      const xy = data.trim().split('\n').filter(item => item).map(item => item.trim().split(/\s+/));
+
+      const func = document.getElementById('func').value;
+      const f = (x, c) => eval(func);
+
+      const iterations = document.getElementById('iterations').value;
+
+      const coeffs = document.getElementById('coeffs').value;
+      const c = coeffs.trim().split(/\s+/).map(item => Number(item))
+      const s = Number(document.getElementById('s').value) || Infinity;
+
+      const res = fit(xy, f, c, s, iterations);
+      document.getElementById('coeffs').value = res.c.join(' ');
+      document.getElementById('s').value = res.s;
+
+
+    }
+
+    const plot = () => {
+
+      const data = document.getElementById('data').value;
+      console.log(data);
+      const xy = data.trim().split('\n').filter(item => item).map(item => item.trim().split(/\s+/));
+      console.log(xy);
+
+      let f = (x, c) => c[0] + c[1] * x;
+
+      const coeffs = document.getElementById('coeffs').value;
+      console.log(coeffs);
+      let c = coeffs.trim().split(/\s+/).map(item => Number(item))
+      console.log(c);
+
+      let datasets = [{
+        fill: false,
+        // borderColor: 'black',
+        // backgroundColor: 'black',
+        label: 'XY',
+        // xAxisID: 'Hours',
+        // yAxisID: '%Probability',
+        pointBorderColor: 'blue',
+        pointBorderWidth: 2,
+        pointRadius: 3,
+        showLine: false,
+        // spanGaps: true,
+        lineTension: 0,
+        // borderWidth: 0,
+        // borderColor: 'green',
+        data: xy.map((item) => ({ x: item[0], y: item[1] }))
+      }, {
+        fill: false,
+        // borderColor: 'black',
+        // backgroundColor: 'black',
+        label: 'F(X)',
+        // xAxisID: 'Hours',
+        // yAxisID: '%Probability',
+        // pointBorderColor: 'rgba(100,255,0,1)',
+        pointBorderWidth: 0,
+        pointRadius: 0,
+        showLine: true,
+        // spanGaps: true,
+        lineTension: 0,
+        borderWidth: 2,
+        borderColor: 'red',
+        data: xy.map((item) => ({ x: item[0], y: f(item[0], c) }))
+      }];
+
+      const ctx = document.getElementById("myChart");
+      let myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          datasets
+        },
+        options: {
+          scales: {
+            xAxes: [{
+              type: 'linear',
+              // type: 'time',
+              position: 'bottom'
+            }],
+            // yAxes: [{
+            //   ticks: {
+            //     beginAtZero:true
+            //   }
+            // }]
+          }
+        }
+      });
+
+    }
+  </script>
+</body></html>
