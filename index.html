@@ -1,52 +1,89 @@
 <!DOCTYPE html>
 <html><head>
   <meta charset="utf-8">
-  <title>Vector Example</title>
+  <title>Curve Fit</title>
   <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
+  <style media="screen">
+    .inline-block {
+      display: inline-block;
+    }
+    pre {
+      display: inline-block;
+    }
+    input {
+      width: 300px;
+    }
+    .spinner {
+      position: fixed;
+      top: 0;
+      left: 0;
+      background-color: rgba(0,0,0,0.5);
+      height: 100vh;
+      width: 100%;
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
 
   <!-- Chart.js CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.bundle.min.js"></script>
+  <!-- jQuery cdn -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 
   <script src="index.js"></script>
 </head><body>
   <h1></h1>
   <h2>Data</h2>
-  <textarea id="data" rows="8" cols="40" placeholder="X Y">
-    1  12
-    7 14
-    12	5
+  <div class="inline-block">
+    <textarea id="data" rows="20" cols="20" placeholder="X Y">
+      1  12
+      7 14
+      12	5
 
-    21	 7
+      21	 7
 
-  </textarea>
+    </textarea>
+  </div>
+  <div class="inline-block">
+    <pre>f(x, c)= </pre><input id="func" value="c[0] + c[1] * x" placeholder="function(x, c)" /><br>
+    <pre>{c}  =   </pre><input id="coeffs" value="5 0.5" placeholder="coeffs" /><br>
+    <pre>s   =    </pre><input id="s" value="Infinity" placeholder="s" onblur="sBlur()" /><br>
+    <pre>iter  =  </pre><input id="iterations" type="number" min="0" value="100" placeholder="iterations" /><br>
+    <button id="curveFit" onclick="curveFit()">Curve Fit</button>
+    <button onclick="plot()">Plot</button>
+  </div>
 
-  <input id="func" value="c[0] + c[1] * x" />
-  <input id="coeffs" value="5 0.5" />
-  <input id="s" value="Infinity" />
+  <div class="wrapper">
+    <canvas id="myChart" width="400" height="200"></canvas>
+  </div>
 
-  <button onclick="plot()">Plot</button>
+  <div class="spinner hidden"></div>
 
-  <input id="iterations" value="100" />
-  <button onclick="curveFit()">Curve Fit</button>
-
-  <canvas id="myChart" width="400" height="200"></canvas>
   <script>
     const curveFit = () => {
+      $('.spinner').removeClass('hidden');
+
       const data = document.getElementById('data').value;
       const xy = data.trim().split('\n').filter(item => item).map(item => item.trim().split(/\s+/));
 
       const func = document.getElementById('func').value;
-      const f = (x, c) => eval(func);
-
-      const iterations = document.getElementById('iterations').value;
+      const f = (x, c) => eval(func); // Better set your function right here
 
       const coeffs = document.getElementById('coeffs').value;
-      const c = coeffs.trim().split(/\s+/).map(item => Number(item))
+      const c = coeffs.trim().split(/\s+/).map(item => Number(item));
+
       const s = Number(document.getElementById('s').value) || Infinity;
 
-      const res = fit(xy, f, c, s, iterations);
-      document.getElementById('coeffs').value = res.c.join(' ');
-      document.getElementById('s').value = res.s;
+      const iterations = Number(document.getElementById('iterations').value);
+
+      const res = fit(xy, f, c, s, iterations).then(({ c, s }) => {
+        document.getElementById('coeffs').value = c.join(' ');
+        document.getElementById('s').value = s;
+
+        $(".spinner").addClass('hidden');
+        alert(s);
+      });
 
 
     }
@@ -54,16 +91,13 @@
     const plot = () => {
 
       const data = document.getElementById('data').value;
-      console.log(data);
       const xy = data.trim().split('\n').filter(item => item).map(item => item.trim().split(/\s+/));
-      console.log(xy);
 
-      let f = (x, c) => c[0] + c[1] * x;
+      const func = document.getElementById('func').value;
+      const f = (x, c) => eval(func);
 
       const coeffs = document.getElementById('coeffs').value;
-      console.log(coeffs);
-      let c = coeffs.trim().split(/\s+/).map(item => Number(item))
-      console.log(c);
+      const c = coeffs.trim().split(/\s+/).map(item => Number(item));
 
       let datasets = [{
         fill: false,
@@ -122,5 +156,7 @@
       });
 
     }
+
+    const sBlur = () => document.getElementById('s').value = document.getElementById('s').value || Infinity;
   </script>
 </body></html>

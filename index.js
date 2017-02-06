@@ -1,4 +1,7 @@
-const fit = (xy, f, cPrev, sPrev, iterations = 1, d) => Array(iterations).fill().reduce(prev => fit.one(xy, f, prev.c, prev.s, d), { c: cPrev, s: sPrev || Infinity });
+// const fit = (xy, f, cPrev, sPrev, iterations = 1, d) => Array(iterations).fill().reduce(prev => fit.one(xy, f, prev.c, prev.s, d), { c: cPrev, s: sPrev || Infinity });
+async function fit(xy, f, cPrev, sPrev, iterations = 1, d) {
+  return await Array(iterations).fill().reduce(prev => fit.one(xy, f, prev.c, prev.s, d), { c: cPrev, s: sPrev || Infinity });
+}
 
 fit.s = (xy, f, c) => xy.reduce((sum, point) => sum + (point[1] - f(point[0], c))**2, 0);
 
