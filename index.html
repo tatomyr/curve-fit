@@ -52,7 +52,7 @@
   </div>
   <div class="inline-block">
     <pre>f(x, c)= </pre><input id="func" value="c[0] + c[1] * x" placeholder="function(x, c)" /><br>
-    <pre>{c}  =   </pre><input id="coeffs" value="5 0.5" placeholder="coeffs" /><br>
+    <pre>[c]  =   </pre><input id="coeffs" value="5 0.5" placeholder="coeffs" /><br>
     <pre>s   =    </pre><input id="s" value="Infinity" placeholder="s" onblur="sBlur()" /><br>
     <pre>iter  =  </pre><input id="iterations" type="number" min="0" value="100" placeholder="iterations" /><br>
     <button id="curveFit" onclick="curveFit()">Curve Fit</button>
@@ -87,7 +87,8 @@
         document.getElementById('s').value = s;
 
         $(".spinner").addClass('hidden');
-        alert(s);
+        plot();
+        // alert(s);
       });
 
 
