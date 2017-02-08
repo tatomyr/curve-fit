@@ -17,9 +17,15 @@
       position: fixed;
       top: 0;
       left: 0;
-      background-color: rgba(0,0,0,0.5);
+      background: rgba(0,0,0,0.4);
       height: 100vh;
       width: 100%;
+
+      text-align: center;
+      font-family: monospace;
+      font-size: 36pt;
+      color: white;
+      padding-top: calc(49vh);
     }
     .hidden {
       display: none;
@@ -51,9 +57,9 @@
     </textarea>
   </div>
   <div class="inline-block">
-    <pre>f(x, c)= </pre><input id="func" value="c[0] + c[1] * x" placeholder="function(x, c)" /><br>
-    <pre>[c]  =   </pre><input id="coeffs" value="5 0.5" placeholder="coeffs" /><br>
-    <pre>s   =    </pre><input id="s" value="Infinity" placeholder="s" onblur="sBlur()" /><br>
+    <pre>f(x, c)= </pre><input id="func" value="c[0] + c[1] * x ** c[2]" placeholder="function(x, c)" /><br>
+    <pre>[c]  =   </pre><input id="coeffs" value="5 0.5 1" placeholder="coeffs" /><br>
+    <pre>s   =    </pre><input id="squares" value="Infinity" placeholder="s" onblur="sBlur()" /><br>
     <pre>iter  =  </pre><input id="iterations" type="number" min="0" value="100" placeholder="iterations" /><br>
     <button id="curveFit" onclick="curveFit()">Curve Fit</button>
     <button onclick="plot()">Plot</button>
@@ -63,34 +69,34 @@
     <canvas id="myChart" width="400" height="200"></canvas>
   </div>
 
-  <div class="spinner hidden"></div>
+  <div class="spinner hidden">PLEASE WAIT...</div>
 
   <script>
+    const sBlur = () => squares.value = squares.value || Infinity;
+
     const curveFit = () => {
       $('.spinner').removeClass('hidden');
 
-      const data = document.getElementById('data').value;
-      const xy = data.trim().split('\n').filter(item => item).map(item => item.trim().split(/\s+/));
+      setTimeout(() => {
+        const xy = data.value.trim().split('\n').filter(item => item).map(item => item.trim().split(/\s+/));
 
-      const func = document.getElementById('func').value;
-      const f = (x, c) => eval(func); // Better set your function right here
+        const f = (x, c) => eval(func.value);
 
-      const coeffs = document.getElementById('coeffs').value;
-      const c = coeffs.trim().split(/\s+/).map(item => Number(item));
+        const c = coeffs.value.trim().split(/\s+/).map(item => Number(item));
 
-      const s = Number(document.getElementById('s').value) || Infinity;
+        const s = Number(squares.value) || Infinity;
 
-      const iterations = Number(document.getElementById('iterations').value);
+        const iter = Number(iterations.value);
 
-      const res = fit(xy, f, c, s, iterations).then(({ c, s }) => {
-        document.getElementById('coeffs').value = c.join(' ');
-        document.getElementById('s').value = s;
+        const res = fit(xy, f, c, s, iter).then(({ c, s }) => {
+          coeffs.value = c.join(' ');
+          squares.value = s;
 
-        $(".spinner").addClass('hidden');
-        plot();
-        // alert(s);
-      });
-
+          console.info(iter);
+          $(".spinner").addClass('hidden');
+          plot();
+        });
+      }, 10);
 
     }
 
@@ -165,7 +171,5 @@
       });
 
     }
-
-    const sBlur = () => document.getElementById('s').value = document.getElementById('s').value || Infinity;
   </script>
 </body></html>
