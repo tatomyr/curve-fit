@@ -96,7 +96,10 @@
     const plot = () => {
 
       const data = document.getElementById('data').value;
-      const xy = data.trim().split('\n').filter(item => item).map(item => item.trim().split(/\s+/));
+      const xy = data.trim().split('\n').filter(item => item).map(item => item.trim().split(/\s+/)).sort((a, b) => a[0] - b[0]);
+
+      const quantity = 100;
+      const x = Array(quantity).fill().map((_, i) => Number(xy[0][0]) + Number(xy[xy.length - 1][0] - xy[0][0]) * i / (quantity - 1));
 
       const func = document.getElementById('func').value;
       const f = (x, c) => eval(func);
@@ -135,7 +138,7 @@
         lineTension: 0,
         borderWidth: 2,
         borderColor: 'red',
-        data: xy.map((item) => ({ x: item[0], y: f(item[0], c) }))
+        data: x.map(x => ({ x, y: f(x , c) }))
       }];
 
       const ctx = document.getElementById("myChart");
