@@ -11,28 +11,3 @@ fit.one = (xy, f, c, s = Infinity, d = 1) => {
   const s_ = fit.s(xy, f, c_);
   return s_ < s ? { c: c_, s: s_ } : { c, s };
 }
-
-/////////////////////////////////////////
-/*
-let xy = [
-  [1,7],
-  [2,3],
-  [5,4],
-];
-
-let c = [ 10, -1 ];
-let f = (x, c) => c[0] + c[1] * x;
-
-console.log( fit(xy, f, c, Infinity, 10) );
-
-
-let data = `
-  1 12
-  7 14
-  12 5
-  41 7
-`;
-xy = data.trim().split('\n').filter(item => item).map(item => item.trim().split(/ +/));
-console.log(xy);
-console.log( fit(xy, f, c, Infinity, 10) );
-*/
